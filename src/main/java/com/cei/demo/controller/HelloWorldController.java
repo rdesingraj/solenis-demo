@@ -8,5 +8,6 @@ public class HelloWorldController
 public String hello() 
 {
 return "Hotfix changes 1.0.1 new update.";
+
 }
 }
