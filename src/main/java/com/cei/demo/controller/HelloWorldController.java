@@ -8,5 +8,6 @@ public class HelloWorldController
 public String hello() 
 {
 return "Release 1.0 update.";
+
 }
 }
