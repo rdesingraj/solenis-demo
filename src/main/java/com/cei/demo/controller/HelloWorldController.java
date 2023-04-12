@@ -7,7 +7,7 @@ public class HelloWorldController
 @RequestMapping("/")
 public String hello() 
 {
-return "Release 1.0 update.";
+return "Hotfix changes 1.0.1 new update.";
 
 }
 }
