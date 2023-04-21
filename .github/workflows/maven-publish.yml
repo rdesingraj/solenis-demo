@@ -28,6 +28,13 @@ jobs:
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+      
+    - name: Setup Cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runnuer.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runnuer.os }}-m2
 
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
