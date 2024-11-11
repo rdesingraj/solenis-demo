@@ -4,14 +4,14 @@ on: [workflow_call]
 
 jobs:
   check_conditions:
-    uses: ./.github/workflows/common-rules.yml
+    uses: ./.github/workflows/common-parts.yml
     with:
-      job: workflow
+      job: workflow_rules
 
   semver_tag:
-    uses: ./.github/workflows/common-rules.yml
+    uses: ./.github/workflows/common-parts.yml
     with:
-      job: semver_tag
+      job: semver_tag_rule
 
   docs:
     # runs-on: ubuntu-latest
