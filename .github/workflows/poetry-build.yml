@@ -56,7 +56,9 @@ jobs:
     uses: ./.github/workflows/poetry-parts.yml
     with:
       job: doc_poetry_before_script
-
+      PYPI_USERNAME: PYPI_USERNAME
+      PYPI_TOKEN: PYPI_TOKEN
+      PYTHON_VERSION: 1
       
       # - name: Checkout code
       #   uses: actions/checkout@v2
