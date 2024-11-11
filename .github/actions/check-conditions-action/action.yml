@@ -8,10 +8,10 @@ runs:
       shell: bash
       run: |
         if [[ "${{ github.event_name }}" == 'push' && "${{ github.event.pull_request }}" ]]; then
-          echo "rules_matched=true" >> $GITHUB_ENV
+          echo "result=true" >> $GITHUB_OUTPUT
         else
-          echo "rules_matched=false" >> $GITHUB_ENV
+          echo "result=false" >> $GITHUB_OUTPUT
         fi
 
-# outputs:
-#   rules_matched: ${{ env.rules_matched }}
+outputs:
+  rules_matched: ${{ steps.check.outputs.result }}
