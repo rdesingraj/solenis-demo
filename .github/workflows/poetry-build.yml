@@ -44,13 +44,13 @@ jobs:
         id: check_conditions_action
         uses: ./.github/actions/check-conditions-action
 
-      - name: Update Rule
-        run: |
-          echo "workflow=true" >> $GITHUB_ENV
+      # - name: Update Rule
+      #   run: |
+      #     echo "workflow=true" >> $GITHUB_ENV
   
   docs:
     needs: check_conditions
-    if: ${{ needs.check_conditions.outputs.workflow == 'true' }}
+    if: ${{ needs.check_conditions.outputs.workflow != 'true' }}
     # if: ${{ env.workflow == 'true' }}
     runs-on: ubuntu-latest 
     steps:
