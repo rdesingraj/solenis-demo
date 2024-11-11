@@ -42,7 +42,7 @@ jobs:
       
       - name: Check if File Exists
         id: check_conditions_action
-        uses: ./.github/actions/check-conditions-action\
+        uses: ./.github/actions/check-conditions-action
 
       - name: Use the result
         run: | 
