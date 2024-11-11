@@ -51,7 +51,7 @@ jobs:
   
   docs:
     needs: check_conditions
-    if: ${{ env.workflow == 'true' }}
+    # if: ${{ env.workflow == 'true' }}
     runs-on: ubuntu-latest 
     steps:
       - name: Checkout code
