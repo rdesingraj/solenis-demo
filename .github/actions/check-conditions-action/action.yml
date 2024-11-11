@@ -10,8 +10,8 @@ runs:
         echo "Event name: ${{ github.event_name }}"
         echo "Pull request: ${{ github.event.pull_request }}"
         if [[ "${{ github.event_name }}" == 'push' && "${{ github.event.pull_request }}" ]]; then
-          echo "::set-output name=rules_matched::true"
+          echo "rules_matched=true" >> $GITHUB_ENV
         else       
-          echo "::set-output name=rules_matched::false"
+          echo "rules_matched=false" >> $GITHUB_ENV
         fi
-        echo "rules_matched set to: ${{ steps.check.outputs.rules_matched }}"
+        echo "rules_matched set to: ${{ env.rules_matched }}"
