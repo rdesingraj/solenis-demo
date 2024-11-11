@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Run Check Conditions Action
         id: check_conditions
-        uses: ./.github/actions/check-conditions-action
+        uses: ./.github/action/check-conditions-action
         
   semver_tag:
     uses: ./.github/workflows/common-parts.yml
