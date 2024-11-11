@@ -1,0 +1,29 @@
+name: "Install Python and Poetry"
+description: "Sets up Python and installs Poetry for workflows."
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ inputs.python_version }}
+
+    - name: Install Poetry
+      id: install
+      shell: bash
+      run: |
+        python --version
+        curl -sSL https://install.python-poetry.org | python3 -
+        mkdir -p .venv
+        echo $PATH
+        export PATH="$PWD/.venv/bin:/root/.local/bin:$PATH"
+        poetry --version
+        echo "::set-output name=poetry_path::$PWD/.venv/bin"
+outputs:
+  poetry_path:
+    description: "The path to the Poetry binary"
+    value: ${{ steps.install.outputs.poetry_path }}
+inputs:
+  python_version:
+    description: "Python version to set up"
+    required: true
