@@ -14,3 +14,4 @@ runs:
         else       
           echo "::set-output name=rules_matched::false"
         fi
+        echo "rules_matched set to: ${{ steps.check.outputs.rules_matched }}"
