@@ -20,8 +20,8 @@ jobs:
     uses: ./.github/workflows/poetry-parts.yml
     with:
       job: doc_poetry_before_script
-      pypi_username: PYPI_USERNAME
-      pypi_password: PYPI_PASSWORD
+      PYPI_USERNAME: PYPI_USERNAME
+      PYPI_TOKEN: PYPI_TOKEN
       PYTHON_VERSION: 1
 
   tests:
@@ -31,8 +31,8 @@ jobs:
     uses: ./.github/workflows/poetry-parts.yml
     with:
       job: test_poetry_script
-      pypi_username: PYPI_USERNAME
-      pypi_password: PYPI_PASSWORD
+      PYPI_USERNAME: PYPI_USERNAME
+      PYPI_TOKEN: PYPI_TOKEN
       PYTHON_VERSION: 1
 
   build_linux_x86_64:
@@ -42,8 +42,8 @@ jobs:
     uses: ./.github/workflows/poetry-parts.yml
     with:
       job: build_poetry_script
-      pypi_username: PYPI_USERNAME
-      pypi_password: PYPI_PASSWORD
+      PYPI_USERNAME: PYPI_USERNAME
+      PYPI_TOKEN: PYPI_TOKEN
       PYTHON_VERSION: 1
 
   deploy_linux:
@@ -52,7 +52,7 @@ jobs:
     if: needs.check_conditions.outputs.rules_matched == 'true'
     uses: ./.github/workflows/poetry-parts.yml
     with:
-      pypi_username: PYPI_USERNAME
-      pypi_password: PYPI_PASSWORD
+      PYPI_USERNAME: PYPI_USERNAME
+      PYPI_TOKEN: PYPI_TOKEN
       PYTHON_VERSION: 1
       job: deploy_poetry_script
