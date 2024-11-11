@@ -4,34 +4,43 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  INCLUDE_PLATFORMS: 'linux'
+  PACKAGE_NAME: 'cloud-sync'
+  VDOCS_BUILD_COMMAND: task docs
+  VDOCS_DOCS_ORIGIN_PATH: ./docs
+  VDOCS_PROJECT_LANGUAGE: python
+  VDOCS_PROJECT_DESCRIPTION: "ABM Cloud Sync"
+  PYTHON_VERSION: '3.10'
+      
 jobs:
-  cloud-sync:
-    runs-on: ubuntu-latest
+  use_poetry_build:
+    uses: ./.github/workflows/poetry-build.yml
     
-    env:
-      INCLUDE_PLATFORMS: 'linux'
-      PACKAGE_NAME: 'cloud-sync'
-      VDOCS_BUILD_COMMAND: task docs
-      VDOCS_DOCS_ORIGIN_PATH: ./docs
-      VDOCS_PROJECT_LANGUAGE: python
-      VDOCS_PROJECT_DESCRIPTION: "ABM Cloud Sync"
-      PYTHON_VERSION: '3.10'
+  use_Versioned_docs:
+    uses: ./.github/workflows/versioned-docs.yml
+    with:
+      VDOCS_BUILD_COMMAND: $VDOCS_BUILD_COMMAND
+      VDOCS_DOCS_ORIGIN_PATH: $VDOCS_DOCS_ORIGIN_PATH
+      VDOCS_PROJECT_LANGUAGE: $VDOCS_PROJECT_LANGUAGE
+      VDOCS_PROJECT_DESCRIPTION: $VDOCS_PROJECT_DESCRIPTION
+      PYTHON_VERSION: $PYTHON_VERSION    
 
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
+    # steps:
+    #   - name: Check out code
+    #     uses: actions/checkout@v3
 
-      - name: Include Poetry Build
-        uses: rdesingraj/solenis-demo/.github/workflows/poetry-build.yml@main
-        with:
-          PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
+    #   - name: Include Poetry Build
+    #     uses: rdesingraj/solenis-demo/.github/workflows/poetry-build.yml@main
+    #     with:
+    #       PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
 
-      - name: Include Versioned-Docs
-        uses: rdesingraj/solenis-demo/.github/workflows/versioned-docs.yml@main
-        with:
-          VDOCS_BUILD_COMMAND: $VDOCS_BUILD_COMMAND
-          VDOCS_DOCS_ORIGIN_PATH: $VDOCS_DOCS_ORIGIN_PATH
-          VDOCS_PROJECT_LANGUAGE: $VDOCS_PROJECT_LANGUAGE
-          VDOCS_PROJECT_DESCRIPTION: $VDOCS_PROJECT_DESCRIPTION
-          PYTHON_VERSION: $PYTHON_VERSION
+    #   - name: Include Versioned-Docs
+    #     uses: rdesingraj/solenis-demo/.github/workflows/versioned-docs.yml@main
+    #     with:
+    #       VDOCS_BUILD_COMMAND: $VDOCS_BUILD_COMMAND
+    #       VDOCS_DOCS_ORIGIN_PATH: $VDOCS_DOCS_ORIGIN_PATH
+    #       VDOCS_PROJECT_LANGUAGE: $VDOCS_PROJECT_LANGUAGE
+    #       VDOCS_PROJECT_DESCRIPTION: $VDOCS_PROJECT_DESCRIPTION
+    #       PYTHON_VERSION: $PYTHON_VERSION
         
