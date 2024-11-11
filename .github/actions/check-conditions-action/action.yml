@@ -7,6 +7,8 @@ runs:
     - id: check
       shell: bash
       run: |
+        echo "Event name: ${{ github.event_name }}"
+        echo "Pull request: ${{ github.event.pull_request }}"
         if [[ "${{ github.event_name }}" == 'push' && "${{ github.event.pull_request }}" ]]; then
           echo "::set-output name=rules_matched::true"
         else       
