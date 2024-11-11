@@ -16,7 +16,7 @@ jobs:
   docs:
     # runs-on: ubuntu-latest
     needs: check_conditions    
-    if: needs.check_conditions.outputs.rules_matched == 'true'
+    # if: needs.check_conditions.outputs.rules_matched == 'true'
     runs-on: ubuntu-latest    
     # needs: install_poetry
     steps:
