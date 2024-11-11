@@ -1,9 +1,7 @@
 name: Poetry Build
 
 on: [workflow_call]
-env:
-  workflow: false
-  semver: false
+
 jobs:
   # check_conditions:
   #   runs-on: ubuntu-latest
