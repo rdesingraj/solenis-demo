@@ -1,52 +1,7 @@
 name: Common Parts Workflow
 
-#on:
-#  workflow_call:
-#    inputs:
-#      ref_name:
-#        required: true
-#        type: string
-#
-#jobs:
-#  semver_tag_rule:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Check Semver Tag
-#        id: check_semver
-#        run: |
-#          if [[ "${{ inputs.ref_name }}" =~ ^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$ ]]; then
-#            echo "semver=true" >> $GITHUB_ENV
-#          else
-#            echo "semver=false" >> $GITHUB_ENV
-#          fi
-#
-#  workflow_rules:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Check Workflow Rules
-#        id: check_workflow
-#        run: |
-#          if [[ "${{ github.event_name }}" == "push" && "${{ github.event.pull_request }}" != "null" ]]; then
-#            echo "workflow=true" >> $GITHUB_ENV
-#          else
-#            echo "workflow=false" >> $GITHUB_ENV
-#          fi
-#    continue-on-error: true
-#
-#  merge_request_event:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Check Merge Request Event
-#        id: check_merge_request
-#        run: |
-#          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-#            echo "merge_request=true" >> $GITHUB_ENV
-#          else
-#            echo "merge_request=false" >> $GITHUB_ENV
-#          fi
-
 on: [workflow_call]
-jobs:
+jobs:          
   workflow_rules:
     runs-on: ubuntu-latest
     outputs:
@@ -59,7 +14,6 @@ jobs:
           else
             echo "result=false" >> $GITHUB_OUTPUT
           fi
-
   semver_tag_rule:
     runs-on: ubuntu-latest
     outputs:
