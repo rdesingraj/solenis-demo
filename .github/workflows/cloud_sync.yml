@@ -22,10 +22,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Include Poetry Build
-        uses: adi-innersource/build-helpers/.github/workflows/poetry-build.yml@main
+        uses: ./.github/workflows/poetry-build.yml@main
 
       - name: Include Versioned-Docs
-        uses: adi-innersource/build-helpers/.github/workflows/versioned-docs.yml@main
+        uses: ./.github/workflows/versioned-docs.yml@main
         with:
           VDOCS_BUILD_COMMAND: $VDOCS_BUILD_COMMAND
           VDOCS_DOCS_ORIGIN_PATH: $VDOCS_DOCS_ORIGIN_PATH
