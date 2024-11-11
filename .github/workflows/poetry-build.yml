@@ -39,7 +39,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - run: echo "Data is ${{ env.rules_matched }}"
       
       - name: Check if File Exists
         id: check_conditions_action
