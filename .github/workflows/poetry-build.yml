@@ -5,13 +5,13 @@ on: [workflow_call]
 jobs:
   check_conditions:
     uses: ./.github/workflows/common-parts.yml
-    with:
-      job: workflow_rules
+    # outputs:
+    #   rules_matched: ${{ jobs.check_conditions.outputs.rules_matched }}
 
   semver_tag:
     uses: ./.github/workflows/common-parts.yml
-    with:
-      job: semver_tag_rule
+    # outputs:
+    #   semver_tag_matched: ${{ jobs.semver_tag.outputs.semver_tag_matched }}
 
   docs:
     # runs-on: ubuntu-latest
