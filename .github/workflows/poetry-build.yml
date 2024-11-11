@@ -21,7 +21,7 @@ jobs:
     # needs: install_poetry
     steps:
     
-      - run: echo ${{ needs.check_conditions.outputs.rules_matched }}
+      - run: echo " Data is  ${{ needs.check_conditions.outputs.rules_matched }}"
       # - name: Checkout code
       #   uses: actions/checkout@v2
 
