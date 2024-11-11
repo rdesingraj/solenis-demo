@@ -44,9 +44,9 @@ jobs:
         id: check_conditions_action
         uses: ./.github/actions/check-conditions-action
 
-      # - name: Update Rule
-      #   run: |
-      #     echo "workflow=true" >> $GITHUB_ENV
+      - name: Update Rule
+        run: |
+          echo "workflow=true" >> $GITHUB_ENV
   
   docs:
     needs: check_conditions
