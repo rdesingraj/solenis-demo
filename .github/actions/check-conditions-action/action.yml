@@ -10,8 +10,8 @@ runs:
         echo "Event name: ${{ github.event_name }}"
         echo "Pull request: ${{ github.event.pull_request }}"
         if [[ "${{ github.event_name }}" == 'push' && "${{ github.event.pull_request }}" ]]; then
-          echo "rules_matched=true" >> $GITHUB_ENV
-        else       
           echo "rules_matched=false" >> $GITHUB_ENV
+        else       
+          echo "rules_matched=true" >> $GITHUB_ENV
         fi
         echo "rules_matched set to: ${{ env.rules_matched }}"
