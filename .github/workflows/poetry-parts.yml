@@ -27,8 +27,7 @@ env:
   COMPOSED_PYPI_URL: https://upload.pypi.org/legacy/
 
 jobs:
-
-  doc_poetry_before_script:
+  install_poetry:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -36,9 +35,22 @@ jobs:
 
       - name: Install Python and Poetry
         id: poetry_installation
-        uses: ./.github/action/install-poetry
+        uses: ./.github/actions/install-poetry
         with:
-          python_version: $PYTHON_VERSION
+          python_version: ${{ inputs.PYTHON_VERSION }}
+
+  doc_poetry_before_script:
+    runs-on: ubuntu-latest
+    needs: install_poetry
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # - name: Install Python and Poetry
+      #   id: poetry_installation
+      #   uses: ./.github/action/install-poetry
+      #   with:
+      #     python_version: $PYTHON_VERSION
 
       - name: Use Poetry
         run: echo ${{ steps.poetry_installation.outputs.poetry_path }}
