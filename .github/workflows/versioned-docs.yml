@@ -1,0 +1,139 @@
+name: Poetry Build
+
+on:
+  workflow_call:
+    inputs:
+      VDOCS_BUILD_COMMAND:
+        required: true
+        type: string
+      VDOCS_DOCS_ORIGIN_PATH:
+        required: true
+        type: string
+      VDOCS_PROJECT_LANGUAGE:
+        required: true
+        type: string
+      VDOCS_PROJECT_DESCRIPTION:
+        required: true
+        type: string
+      PYTHON_VERSION:
+        required: true
+        type: string
+
+env:
+  VDOCS_BUILD_COMMAND: ${{ inputs.VDOCS_BUILD_COMMAND }}
+  VDOCS_DOCS_ORIGIN_PATH: ${{ inputs.VDOCS_DOCS_ORIGIN_PATH }}
+  VDOCS_PROJECT_LANGUAGE: ${{ inputs.VDOCS_PROJECT_LANGUAGE }}
+  VDOCS_PROJECT_DESCRIPTION: ${{ inputs.VDOCS_PROJECT_DESCRIPTION }}
+  PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
+
+jobs:
+  check_conditions:
+    uses: ./.github/workflows/common-rules.yml
+    with:
+      job: workflow
+
+  semver_tag:
+    uses: ./.github/workflows/common-rules.yml
+    with:
+      job: semver_tag
+
+  docs:
+    runs-on:
+      - self-hosted
+      - docker
+    needs: semver_tag
+    if: github.ref_name == 'docs-test' && needs.semver_tag.outputs.rules_matched == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate and Upload Coverage Reports
+        uses: ./.github/actions/doc-prepare
+        with:
+          python_version: $PYTHON_VERSION
+
+      - name: Build Docs
+        run: |
+          eval "$VDOCS_BUILD_COMMAND"
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: vdocs_docs_${{ github.run_id }}
+          path: $VDOCS_DOCS_ORIGIN_PATH
+          retention-days: 1
+
+  historical-docs:
+    runs-on:
+      - self-hosted
+      - docker
+    needs: check_conditions
+    if: startsWith(github.ref_name, 'historical-docs')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
+
+      - name: Generate and Upload Coverage Reports
+        uses: ./.github/actions/doc-prepare
+        with:
+          python_version: $PYTHON_VERSION
+
+      - name: Build Historical Docs
+        run: |
+          test -z $VDOCS_DOCS_ORIGIN_PATH && test -z $VDOCS_BUILD_COMMAND # Fail if these aren't set
+          ORIGIN_PARENT_PATH=$(dirname "$VDOCS_DOCS_ORIGIN_PATH")
+          for TAG in $(git tag); do
+              mkdir -p doc_builds/$TAG/$VDOCS_DOCS_ORIGIN_PATH
+              echo "Checking out tag" $TAG
+              git checkout -f $TAG
+              echo "Building for tag" $TAG
+              eval $VDOCS_BUILD_COMMAND
+              cp -r $VDOCS_DOCS_ORIGIN_PATH doc_builds/$TAG/$ORIGIN_PARENT_PATH
+              # Clean up residual docs
+              rm -r $VDOCS_DOCS_ORIGIN_PATH/*
+          done
+
+      - name: Upload Historical Docs Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: vdocs_historical_docs
+          path: doc_builds
+          retention-days: 1
+
+  pages:
+    runs-on:
+      - self-hosted
+      - docker
+    if: (startsWith(github.ref_name, 'docs-test') || startsWith(github.ref_name, 'historical-docs'))  && needs.semver_tag.outputs.rules_matched == 'true'
+    env:
+      GIT_STRATEGY: fetch
+      GIT_FETCH_EXTRA_FLAGS: --tags
+      AGSW_ACCOUNT_ID: "687013406796"
+      VERSIONED_DOCS_ARTIFACTS_BUCKET: "versioned-docs-artifacts"
+      VERSIONED_DOCS_CI_ROLE: "VersionedDocsCIRole"
+      DOCUMENTATION_TYPE: "development-docs"
+
+    container:
+      image: artifactory.analog.com:6570/versioned-docs:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Run gather-docs
+        run: gather-docs
+
+      - name: Run push-docs-version
+        run: push-docs-version
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: vdocs_pages_${{ github.run_id }}
+          path: public/
+          retention-days: 1

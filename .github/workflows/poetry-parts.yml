@@ -1,0 +1,200 @@
+name: Poetry Parts Script
+
+on:
+  workflow_call:
+    inputs:
+      PYTHON_VERSION:
+        required: true
+        type: string
+      PYPI_USERNAME:
+        required: true
+        type: string
+      PYPI_TOKEN:
+        required: true
+        type: string
+
+env:
+  ARTIFACTORY_UPLOAD: "true"
+  DEFAULT_AG_URL: "https://artifactory.analog.com/artifactory"
+  LINT_DIRS: "src tests"
+  SRC_DIR: "src"
+  UPLOAD_CHANNEL_PYPI: "adi-pypi-local"
+  JUNIT_XML: "junit_report.xml"
+  COVERAGE_XML: "coverage.xml"
+  PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
+  PYPI_USERNAME: ${{ secrets.ARTIFACTORY_API_USER }}
+  PYPI_TOKEN: ${{ secrets.ARTIFACTORY_API_TOKEN }}
+  COMPOSED_PYPI_URL: https://upload.pypi.org/legacy/
+
+jobs:
+
+  doc_poetry_before_script:
+    runs-on: ubuntu-latest
+    needs: install_poetry
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Python and Poetry
+        id: poetry_installation
+        uses: ./.github/actions/install-poetry
+        with:
+          python_version: $PYTHON_VERSION
+
+      - name: Use Poetry
+        run: echo ${{ steps.poetry_installation.outputs.poetry_path }}
+
+      - name: Install Poetry and Docs Dependencies
+        run: |
+          ${{ steps.poetry_installation.outputs.poetry_path }}/poetry install --without dev --with docs
+
+  test_poetry_tasks_script:
+    runs-on: ubuntu-latest
+#    needs: coverage_reports
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate and Upload Coverage Reports
+        uses: ./.github/actions/poetry-coverage-reports
+        with:
+          python_version: $PYTHON_VERSION
+          coverage_xml: ${{ env.COVERAGE_XML }}
+          junit_xml: ${{ env.JUNIT_XML }}"
+
+      - name: Use Poetry
+        run: echo ${{ steps.poetry_installation.outputs.poetry_path }}
+
+      - name: Install Poetry Dependencies
+        run: |
+          ${{ steps.poetry_installation.outputs.poetry_path }}/poetry install --only main,test,dev
+
+      - name: Lint Code
+        run: |
+          echo "Linting"
+          task ci-lint
+          echo "Finished linting"
+
+      - name: Run Tests
+        run: task ci-test
+
+  test_poetry_script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate and Upload Coverage Reports
+        uses: ./.github/actions/poetry-coverage-reports
+        with:
+          python_version: $PYTHON_VERSION
+          coverage_xml: ${{ env.COVERAGE_XML }}
+          junit_xml: ${{ env.JUNIT_XML }}"
+
+      - name: Install Poetry Dependencies
+        run: |
+          ${{ steps.poetry_installation.outputs.poetry_path }}/poetry install --only main,test,dev
+
+      - name: Lint Code
+        run: |
+          echo "Linting"
+          black . --check
+          pflake8 ${{ env.LINT_DIRS }}
+          mypy ${{ env.SRC_DIR }}
+          if grep -q -F '[tool.bandit]' pyproject.toml; then
+            ${{ steps.poetry_installation.outputs.poetry_path }}/bandit -ilr ${{ env.SRC_DIR }} -c pyproject.toml;
+          else
+            ${{ steps.poetry_installation.outputs.poetry_path }}/bandit -ilr ${{ env.SRC_DIR }};
+          fi
+          pylint ${{ env.LINT_DIRS }}
+          echo "Finished linting"
+
+      - name: Run Tests
+        run: |
+          pytest -v --cov --cov-report term --cov-report xml:${{ env.COVERAGE_XML }} --junit-xml=${{ env.JUNIT_XML }}
+
+#  coverage_reports:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Generate and Upload Coverage Reports
+#        uses: ./.github/actions/coverage-reports
+#        with:
+#          python_version: $PYTHON_VERSION
+#          coverage_xml: ${{ env.COVERAGE_XML }}
+#          junit_xml: ${{ env.JUNIT_XML }}"
+#
+#      - name: Install Python and Poetry
+#        id: poetry_installation
+#        uses: ./.github/actions/install-poetry
+#        with:
+#          python_version: $PYTHON_VERSION
+#
+#      - name: Use Poetry Path
+#        run: echo "Poetry path is: ${{ steps.poetry_installation.outputs.poetry_path }}"
+#
+#      - name: Generate Coverage Reports
+#        run: |
+#          echo "Generating coverage report: ${{ env.COVERAGE_XML }}"
+#          echo "Generating JUnit report: ${{ env.JUNIT_XML }}"
+#
+#      - name: Upload Coverage Report
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: coverage-report
+#          path: ${{ env.COVERAGE_XML }}
+#
+#      - name: Upload JUnit Report
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: junit-report
+#          path: ${{ env.JUNIT_XML }}
+
+  build_poetry_script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Python and Poetry
+        uses: ./.github/actions/install-poetry
+        with:
+          python_version: $PYTHON_VERSION
+
+      - name: Use Poetry
+        run: echo ${{ steps.poetry_installation.outputs.poetry_path }}
+
+      - name: Build Poetry
+        run: ${{ steps.poetry_installation.outputs.poetry_path }}/poetry build
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: poetry-build-artifacts
+          path: dist/
+
+  deploy_poetry_script:
+    runs-on: ubuntu-latest
+    env:
+      PYPI_USERNAME: ${{ inputs.PYPI_USERNAME }}
+      PYPI_TOKEN: ${{ inputs.PYPI_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: $PYTHON_VERSION
+
+      - name: Install Twine
+        run: pip install twine
+
+      - name: Echo PyPI URL
+        run: echo https://upload.pypi.org/legacy/
+
+      - name: Upload to PyPI
+        run: |
+          twine upload --verbose  --username $PYPI_USERNAME  --password $PYPI_TOKEN  --repository-url $COMPOSED_PYPI_URL  "dist/*"

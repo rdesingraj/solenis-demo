@@ -1,0 +1,48 @@
+name: Poetry Build
+
+on: [workflow_call]
+
+jobs:
+  check_conditions:
+    uses: ./.github/workflows/common-rules.yml
+    with:
+      job: workflow
+
+  semver_tag:
+    uses: ./.github/workflows/common-rules.yml
+    with:
+      job: semver_tag
+
+  docs:
+    runs-on: ubuntu-latest
+    needs: check_conditions
+    if: needs.check_conditions.outputs.rules_matched == 'true'
+    uses: ./.github/workflows/poetry-parts.yml
+    with:
+      job: doc_poetry_before_script
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: check_conditions
+    if: needs.check_conditions.outputs.rules_matched == 'true'
+    uses: ./.github/workflows/poetry-parts.yml
+    with:
+      job: test_poetry_script
+
+  build_linux_x86_64:
+    runs-on: ubuntu-latest
+    needs: check_conditions
+    if: needs.check_conditions.outputs.rules_matched == 'true'
+    uses: ./.github/workflows/poetry-parts.yml
+    with:
+      job: build_poetry_script
+
+  deploy_linux:
+    runs-on: ubuntu-latest
+    needs: [build_linux_x86_64]
+    if: needs.check_conditions.outputs.rules_matched == 'true'
+    uses: ./.github/workflows/poetry-parts.yml
+    with:
+      pypi_username: ${{ secrets.PYPI_USERNAME }}
+      pypi_password: ${{ secrets.PYPI_PASSWORD }}
+      job: deploy_poetry_script
