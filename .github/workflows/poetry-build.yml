@@ -46,8 +46,7 @@ jobs:
 
       - name: Update Rule
         run: |
-          $workflow = ${{ env.rules_matched }}
-          $workflow = ${{ env.rules_matched }}
+          echo "workflow=true" >> $GITHUB_ENV
   
   docs:
     needs: check_conditions
