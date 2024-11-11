@@ -38,7 +38,12 @@ jobs:
     # needs: install_poetry
     steps:
       - run: echo "Data is ${{ env.rules_matched }}"
+      - uses: ./.github/actions/check-conditions-action
+        id: check_conditions_action
 
+      - name: Use the result
+        run: |
+          echo "Rules Matched: ${{ steps.check_conditions_action.outputs.rules_matched }}"
       # - run: echo "Data is ${{ needs.check_conditions.outputs.rules_matched }}"
       # - run: echo "Data is ${{ needs.check_conditions.outputs.workflow_rules.rules_matched }}"
       # - run: echo "Data is ${{ needs.check_conditions.outputs.workflow_rules }}"
