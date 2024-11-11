@@ -1,5 +1,6 @@
 name: "Check Conditions Action"
 description: "An action to check conditions and output rules_matched"
+
 runs:
   using: "composite"
   steps:
@@ -11,5 +12,6 @@ runs:
         else
           echo "result=false" >> $GITHUB_OUTPUT
         fi
-    outputs:
-      rules_matched: ${{ steps.check.outputs.result }}
+
+outputs:
+  rules_matched: ${{ steps.check.outputs.result }}
