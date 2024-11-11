@@ -46,7 +46,6 @@ name: Common Parts Workflow
 #          fi
 
 on: [workflow_call]
-
 jobs:
   workflow_rules:
     runs-on: ubuntu-latest
@@ -56,9 +55,9 @@ jobs:
       - id: check
         run: |
           if [[ "${{ github.event_name }}" == 'push' && "${{ github.event.pull_request }}" ]]; then
-            echo "::set-output name=result::true"
+            echo "result=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=result::false"
+            echo "result=false" >> $GITHUB_OUTPUT
           fi
 
   semver_tag_rule:
@@ -69,7 +68,7 @@ jobs:
       - id: check
         run: |
           if [[ "${{ github.ref }}" =~ ^refs/tags/v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$ ]]; then
-            echo "::set-output name=result::true"
+            echo "result=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=result::false"
+            echo "result=false" >> $GITHUB_OUTPUT
           fi
