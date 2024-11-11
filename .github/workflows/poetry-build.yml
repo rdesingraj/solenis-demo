@@ -48,10 +48,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       
-      - name: Check if File Exists
-        id: check_conditions_action
-        uses: ./.github/actions/check-conditions-action
-
       - name: Debug Output
         run: |
           echo "Output from check_conditions_action: ${{ needs.check_conditions.outputs.rules_matched }}"
