@@ -20,6 +20,7 @@ jobs:
     uses: ./.github/workflows/poetry-parts.yml
     with:
       job: doc_poetry_before_script
+      PYTHON_VERSION: 1
 
   tests:
     # runs-on: ubuntu-latest
@@ -28,6 +29,7 @@ jobs:
     uses: ./.github/workflows/poetry-parts.yml
     with:
       job: test_poetry_script
+      PYTHON_VERSION: 1
 
   build_linux_x86_64:
     # runs-on: ubuntu-latest
@@ -36,6 +38,7 @@ jobs:
     uses: ./.github/workflows/poetry-parts.yml
     with:
       job: build_poetry_script
+      PYTHON_VERSION: 1
 
   deploy_linux:
     # runs-on: ubuntu-latest
@@ -45,4 +48,5 @@ jobs:
     with:
       pypi_username: PYPI_USERNAME
       pypi_password: PYPI_PASSWORD
+      PYTHON_VERSION: 1
       job: deploy_poetry_script
