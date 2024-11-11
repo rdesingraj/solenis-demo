@@ -43,6 +43,7 @@ jobs:
         uses: ./.github/actions/check-conditions-action
   
   docs:
+    needs: check_conditions
     runs-on: ubuntu-latest 
     steps:
       - name: Checkout code
