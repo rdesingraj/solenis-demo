@@ -43,6 +43,6 @@ jobs:
     if: needs.check_conditions.outputs.rules_matched == 'true'
     uses: ./.github/workflows/poetry-parts.yml
     with:
-      pypi_username: ${{ secrets.PYPI_USERNAME }}
-      pypi_password: ${{ secrets.PYPI_PASSWORD }}
+      pypi_username: PYPI_USERNAME
+      pypi_password: PYPI_PASSWORD
       job: deploy_poetry_script
