@@ -30,12 +30,10 @@ jobs:
     # outputs:
     #   semver_tag_matched: ${{ jobs.semver_tag.outputs.semver_tag_matched }}
 
+  
   docs:
-    # runs-on: ubuntu-latest
     needs: check_conditions    
-    # if: needs.check_conditions.outputs.rules_matched == 'true'
-    runs-on: ubuntu-latest    
-    # needs: install_poetry
+    runs-on: ubuntu-latest 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -44,10 +42,13 @@ jobs:
         id: check_conditions_action
         uses: ./.github/actions/check-conditions-action
 
+      - name: Debug Output
+        run: |
+          echo "Output from check_conditions_action: ${{ steps.check_conditions_action.outputs.rules_matched }}"
+
       - name: Use the result
         run: | 
           echo "The version is ${{ steps.check_conditions_action.outputs.rules_matched }}"
-          echo "Rules Matched: ${{ steps.check_conditions_action.outputs.rules_matched }}"
 
 
 
