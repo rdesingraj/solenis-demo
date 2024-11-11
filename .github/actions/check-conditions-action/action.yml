@@ -12,6 +12,3 @@ runs:
         else
           echo "rules_matched=false" >> $GITHUB_OUTPUT
         fi
-
-outputs:
-  rules_matched: ${{ steps.check.outputs.rules_matched }}
