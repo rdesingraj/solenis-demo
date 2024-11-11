@@ -36,7 +36,7 @@ jobs:
 
       - name: Install Python and Poetry
         id: poetry_installation
-        uses: ./.github/actions/install-poetry
+        uses: ./.github/action/install-poetry
         with:
           python_version: $PYTHON_VERSION
 
