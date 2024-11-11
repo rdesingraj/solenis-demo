@@ -25,11 +25,22 @@ jobs:
   #       id: check_conditions
   #       uses: ./.github/actions/check-conditions-action
         
-  semver_tag:
-    uses: ./.github/workflows/common-parts.yml
+  # semver_tag:
+  #   uses: ./.github/workflows/common-parts.yml
     # outputs:
     #   semver_tag_matched: ${{ jobs.semver_tag.outputs.semver_tag_matched }}
-
+    
+  check_conditions:
+    runs-on: ubuntu-latest
+    outputs:
+      rules_matched: ${{ steps.check_conditions_action.outputs.rules_matched }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Check if File Exists
+        id: check_conditions_action
+        uses: ./.github/actions/check-conditions-action
   
   docs:
     runs-on: ubuntu-latest 
@@ -43,22 +54,24 @@ jobs:
 
       - name: Debug Output
         run: |
+          echo "Output from check_conditions_action: ${{ needs.check_conditions.outputs.rules_matched }}"
           echo "Output from check_conditions_action: ${{ env.rules_matched }}"
 
       - name: Use the result
         run: | 
+          echo "The version is ${{ needs.check_conditions.outputs.rules_matched }}"
           echo "The version is ${{ env.rules_matched }}"
 
-  does:
-    # runs-on: ubuntu-latest
-    # needs: check_conditions
-    # if: ${{ env.rules_matched }} == 'true'
-    uses: ./.github/workflows/poetry-parts.yml
-    with:
-      job: doc_poetry_before_script
-      PYPI_USERNAME: PYPI_USERNAME
-      PYPI_TOKEN: PYPI_TOKEN
-      PYTHON_VERSION: 1
+  # does:
+  #   # runs-on: ubuntu-latest
+  #   # needs: check_conditions
+  #   # if: ${{ env.rules_matched }} == 'true'
+  #   uses: ./.github/workflows/poetry-parts.yml
+  #   with:
+  #     job: doc_poetry_before_script
+  #     PYPI_USERNAME: PYPI_USERNAME
+  #     PYPI_TOKEN: PYPI_TOKEN
+  #     PYTHON_VERSION: 1
       
       # - name: Checkout code
       #   uses: actions/checkout@v2
