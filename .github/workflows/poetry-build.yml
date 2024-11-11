@@ -44,7 +44,8 @@ jobs:
         id: check_conditions_action
 
       - name: Use the result
-        run: |
+        run: | 
+          echo "The version is ${{ steps.check_conditions_action.outputs.rules_matched }}"
           echo "Rules Matched: ${{ steps.check_conditions_action.outputs.rules_matched }}"
       # - run: echo "Data is ${{ needs.check_conditions.outputs.rules_matched }}"
       # - run: echo "Data is ${{ needs.check_conditions.outputs.workflow_rules.rules_matched }}"
