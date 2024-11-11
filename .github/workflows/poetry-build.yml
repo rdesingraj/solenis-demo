@@ -3,20 +3,26 @@ name: Poetry Build
 on: [workflow_call]
 
 jobs:
+  # check_conditions:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     rules_matched: ${{ steps.check.outputs.result }}
+  #   steps:
+  #     - id: check
+  #       run: |
+  #         if [[ "${{ github.event_name }}" == 'push' && -n "${{ github.event.pull_request }}" ]]; then
+  #           echo "result=true" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "result=false" >> $GITHUB_OUTPUT
+  #         fi
+  #     - run: echo "Result in check_conditions is ${{ steps.check.outputs.result }}"
   check_conditions:
     runs-on: ubuntu-latest
-    outputs:
-      rules_matched: ${{ steps.check.outputs.result }}
     steps:
-      - id: check
-        run: |
-          if [[ "${{ github.event_name }}" == 'push' && -n "${{ github.event.pull_request }}" ]]; then
-            echo "result=true" >> $GITHUB_OUTPUT
-          else
-            echo "result=false" >> $GITHUB_OUTPUT
-          fi
-      - run: echo "Result in check_conditions is ${{ steps.check.outputs.result }}"
-
+      - name: Run Check Conditions Action
+        id: check_conditions
+        uses: ./.github/actions/check-conditions-action
+        
   semver_tag:
     uses: ./.github/workflows/common-parts.yml
     # outputs:
@@ -30,7 +36,7 @@ jobs:
     # needs: install_poetry
     steps:
       - run: echo "Data is ${{ needs.check_conditions.outputs.rules_matched }}"
-      - run: echo "Data is ${{ env.result }}"
+
       # - run: echo "Data is ${{ needs.check_conditions.outputs.rules_matched }}"
       # - run: echo "Data is ${{ needs.check_conditions.outputs.workflow_rules.rules_matched }}"
       # - run: echo "Data is ${{ needs.check_conditions.outputs.workflow_rules }}"
