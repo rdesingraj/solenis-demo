@@ -16,14 +16,14 @@ jobs:
   #           echo "result=false" >> $GITHUB_OUTPUT
   #         fi
   #     - run: echo "Result in check_conditions is ${{ steps.check.outputs.result }}"
-  check_conditions:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Run Check Conditions Action
-        id: check_conditions
-        uses: ./.github/actions/check-conditions-action
+  # check_conditions:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+  #     - name: Run Check Conditions Action
+  #       id: check_conditions
+  #       uses: ./.github/actions/check-conditions-action
         
   semver_tag:
     uses: ./.github/workflows/common-parts.yml
@@ -49,8 +49,13 @@ jobs:
         run: | 
           echo "The version is ${{ env.rules_matched }}"
 
-
-
+  does:
+    # runs-on: ubuntu-latest
+    # needs: check_conditions
+    if: ${{ env.rules_matched }} == 'true'
+    uses: ./.github/workflows/poetry-parts.yml
+    with:
+      job: doc_poetry_before_script
 
       
       # - name: Checkout code
