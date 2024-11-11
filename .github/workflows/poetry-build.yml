@@ -32,7 +32,6 @@ jobs:
 
   
   docs:
-    needs: check_conditions    
     runs-on: ubuntu-latest 
     steps:
       - name: Checkout code
@@ -44,11 +43,11 @@ jobs:
 
       - name: Debug Output
         run: |
-          echo "Output from check_conditions_action: ${{ steps.check_conditions_action.outputs.rules_matched }}"
+          echo "Output from check_conditions_action: ${{ env.rules_matched }}"
 
       - name: Use the result
         run: | 
-          echo "The version is ${{ steps.check_conditions_action.outputs.rules_matched }}"
+          echo "The version is ${{ env.rules_matched }}"
 
 
 
