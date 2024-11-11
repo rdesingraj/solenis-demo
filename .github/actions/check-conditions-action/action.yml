@@ -13,5 +13,5 @@ runs:
           echo "rules_matched=false" >> $GITHUB_ENV
         fi
 
-outputs:
-  rules_matched: ${{ env.rules_matched }}
+# outputs:
+#   rules_matched: ${{ env.rules_matched }}
