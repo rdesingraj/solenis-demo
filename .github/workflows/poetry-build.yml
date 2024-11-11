@@ -50,6 +50,7 @@ jobs:
   
   docs:
     needs: check_conditions
+    if: ${{ needs.check_conditions.outputs.workflow == 'true' }}
     # if: ${{ env.workflow == 'true' }}
     runs-on: ubuntu-latest 
     steps:
