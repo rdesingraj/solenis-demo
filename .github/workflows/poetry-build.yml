@@ -37,6 +37,8 @@ jobs:
     runs-on: ubuntu-latest    
     # needs: install_poetry
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - run: echo "Data is ${{ env.rules_matched }}"
       - uses: ./.github/actions/check-conditions-action
         id: check_conditions_action
