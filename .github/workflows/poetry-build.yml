@@ -52,7 +52,7 @@ jobs:
   does:
     # runs-on: ubuntu-latest
     # needs: check_conditions
-    if: ${{ env.rules_matched }} == 'true'
+    # if: ${{ env.rules_matched }} == 'true'
     uses: ./.github/workflows/poetry-parts.yml
     with:
       job: doc_poetry_before_script
