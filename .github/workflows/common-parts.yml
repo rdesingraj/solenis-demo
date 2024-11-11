@@ -12,9 +12,11 @@ jobs:
           else
             echo "result=false" >> $GITHUB_OUTPUT
           fi
+
+        
+      - run: echo "result is ${{ steps.check.outputs.result }}"
     outputs:
       rules_matched: ${{ steps.check.outputs.result }}
-      run: echo "result is ${{ steps.check.outputs.result }}"
         
   # workflow_rules:
   #   runs-on: ubuntu-latest
