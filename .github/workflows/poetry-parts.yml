@@ -30,7 +30,6 @@ jobs:
 
   doc_poetry_before_script:
     runs-on: ubuntu-latest
-    needs: install_poetry
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
