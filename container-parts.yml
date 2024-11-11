@@ -1,0 +1,207 @@
+name: Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      CI_CONTAINER_REGISTRY:
+        required: false
+        type: string
+      CI_CONTAINER_REPO:
+        required: false
+        type: string
+
+env:
+  CI_CONTAINER_REGISTRY: ${{ inputs.CI_CONTAINER_REGISTRY }}
+  CI_CONTAINER_REPO: ${{ inputs.CI_CONTAINER_REPO }}
+  ARTIFACTORY_DEFAULT_REGISTRY: 'artifactory.analog.com:6570'
+  ARTIFACTORY_SANDBOX_REGISTRY: 'artifactory.analog.com:6571'
+  AWS_DEFAULT_REGISTRY: 986433031334.dkr.ecr.us-east-1.amazonaws.com
+  AZURE_DEFAULT_REGISTRY: analoggarage.azurecr.io
+  AZURE_MLDPD_REGISTRY: mldpdddbeda24.azurecr.io
+  GCP_DEFAULT_REGISTRY: us-central1-docker.pkg.dev/agsw-iac-production-cluster/agsw-docker
+
+  DOCKER_BUILD_CONTEXT_PATH: .
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: 'tcp://docker:2376'
+  DOCKER_TLS_CERTDIR: /certs
+  DOCKERFILE_PATH: ./Dockerfile
+
+  # These variables are conveniences for the various silent jobs
+  # Note that some variables are used in multiple jobs, so be cautious
+  # when building CI scripts from scratch.
+  RUNNER_TAG: dind
+  DOCKER_VERSION: '24.0'
+  BASH_VERSION: '5.2'
+  ARGS_FILE: ./args.env
+  BUILD_FILE: ${{ github.sha }}-docker-image
+  IMAGE_FILE: ./${BUILD_FILE}.tar
+  CONTAINER_TEST_BRANCH: container_test
+
+jobs:
+  tags_artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up environment variables
+        run: echo "ARGS_FILE=${{ env.ARGS_FILE }}" >> $GITHUB_ENV
+
+  bash_runner:
+    runs-on: ubuntu-latest
+    container:
+      image: bash:$BASH_VERSION
+    steps:
+      - name: Check bash version
+        run: bash --version
+
+  image_artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-image-tar
+          path: ${{ github.workspace }}/${{ github.sha.slice(0, 7) }}-docker-image.tar
+          retention-days: 1
+
+  dind_runner:
+    runs-on: ubuntu-latest
+    container:
+      image: docker:$DOCKER_VERSION
+      options: --privileged
+    steps:
+      - name: Start Docker service
+        run: |
+          docker info
+
+  check_conditions:
+    uses: common-rules.yml
+    with:
+      job: workflow
+
+  create_tags_job:
+    runs-on: ubuntu-latest
+    container:
+      image: bash:$BASH_VERSION
+#    needs: [tags_artifacts, bash_runner]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up environment variables
+        run: echo "ARGS_FILE=${{ env.ARGS_FILE }}" >> $GITHUB_ENV
+
+      - name: Check bash version
+        run: bash --version
+
+      - name: Create tags
+        run: |
+          VERSION_REGEX='^v?([0-9]+)\.([0-9]+)\.([0-9]+)(.*)$'
+          declare -a TAGS_ARRAY
+          if [[ ${{ github.ref_name }} =~ $VERSION_REGEX ]]; then
+            MAJOR=${BASH_REMATCH[1]}
+            MINOR=${BASH_REMATCH[2]}
+            PATCH=${BASH_REMATCH[3]}
+            OTHER=${BASH_REMATCH[4]}
+            TAGS_ARRAY[0]=${MAJOR}.${MINOR}.${PATCH}${OTHER}
+            if [[ -z $OTHER ]]; then
+              if (( $MAJOR > 0 )); then
+                TAGS_ARRAY[1]=${MAJOR}.${MINOR}
+                TAGS_ARRAY[2]=$MAJOR
+              else
+                if (( $MINOR > 0 )); then
+                  TAGS_ARRAY[1]=${MAJOR}.${MINOR}
+                fi
+              fi
+              TAGS_ARRAY+=("latest")
+            fi
+          else
+            TAGS_ARRAY[0]="${{ github.ref_name }}"
+          fi
+          echo "TAGS=${TAGS_ARRAY[*]}" | tee $GITHUB_ENV
+
+      - name: Save tags to environment file
+        run: echo "TAGS=${TAGS_ARRAY[*]}" >> $GITHUB_ENV
+
+  build:
+    runs-on: ubuntu-latest
+    needs: create-tags
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up Docker
+        uses: docker/setup-docker@v2
+
+      - name: Start Docker service
+        run: |
+          docker run --privileged --name docker-dind -d docker:${{ env.DOCKER_VERSION }}-dind
+          docker ps
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --tag ${{ github.sha }}-docker-image \
+            --label "git_repository=${{ github.repository }}" \
+            --label "git_commit=${{ github.sha }}" \
+            --file ./Dockerfile \
+            .
+
+      - name: Save Docker image
+        run: |
+          docker save --output ./${{ github.sha }}-docker-image.tar ${{ github.sha }}-docker-image
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-image-tar
+          path: ./${{ github.sha }}-docker-image.tar
+
+      - name: Delete Docker image
+        run: docker rmi -f ${{ github.sha }}-docker-image
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [check_conditions, build]
+    if: needs.check_conditions.outputs.rules_matched == 'true' && ${{ github.ref_name == $CONTAINER_TEST_BRANCH }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up Docker
+        uses: docker/setup-docker@v2
+
+      - name: Start Docker service
+        run: |
+          docker run --privileged --name docker-dind -d docker:${{ env.DOCKER_VERSION }}-dind
+          docker ps
+
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-image-tar
+          path: .
+
+      - name: Load Docker image
+        run: docker load -i ./${{ github.sha }}-docker-image.tar
+
+      - name: Tag Docker image
+        run: |
+          for tag in ${{ env.TAGS }}; do
+            docker tag "${{ github.sha }}-docker-image" "$CI_CONTAINER_REGISTRY/$CI_CONTAINER_REPO:${{ github.sha }}"
+            docker tag "$CI_CONTAINER_REGISTRY/$CI_CONTAINER_REPO:${{ github.sha }}" "$CI_CONTAINER_REGISTRY/$CI_CONTAINER_REPO:${tag}"
+          done
+          docker images "$CI_CONTAINER_REGISTRY/$CI_CONTAINER_REPO"
+
+      - name: Push Docker image
+        run: |
+          for tag in ${{ env.TAGS }}; do
+            docker push "$CI_CONTAINER_REGISTRY/$CI_CONTAINER_REPO:${tag}"
+          done
+
+      - name: Delete Docker image
+        run: docker rmi -f ${{ github.sha }}-docker-image

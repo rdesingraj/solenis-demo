@@ -1,0 +1,14 @@
+name: Common Rules
+
+on: [workflow_call]
+
+jobs:
+  workflow:
+    uses: ./.github/workflows/common-parts.yml
+    with:
+      job: workflow_rules
+
+  semver_tag:
+    uses: ./.github/workflows/common-parts.yml
+    with:
+      job: semver_tag_rule
