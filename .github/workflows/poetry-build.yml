@@ -17,12 +17,24 @@ jobs:
     # runs-on: ubuntu-latest
     needs: check_conditions
     if: needs.check_conditions.outputs.rules_matched == 'true'
-    uses: ./.github/workflows/poetry-parts.yml
-    with:
-      job: doc_poetry_before_script
-      PYPI_USERNAME: PYPI_USERNAME
-      PYPI_TOKEN: PYPI_TOKEN
-      PYTHON_VERSION: 1
+    runs-on: ubuntu-latest
+    # needs: install_poetry
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Python and Poetry
+        id: poetry_installation
+        uses: ./.github/action/install-poetry
+        with:
+          python_version: $PYTHON_VERSION
+
+      - name: Use Poetry
+        run: echo ${{ steps.poetry_installation.outputs.poetry_path }}
+
+      - name: Install Poetry and Docs Dependencies
+        run: |
+          ${{ steps.poetry_installation.outputs.poetry_path }}/poetry install --without dev --with docs
 
   tests:
     # runs-on: ubuntu-latest
