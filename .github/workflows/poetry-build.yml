@@ -23,9 +23,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       
-      - name: Check Rule - Workflow
-        id: check_conditions_action
-        uses: ./.github/actions/workflow-default-action
+      # - name: Check Rule - Workflow
+      #   id: check_conditions_action
+      #   uses: ./.github/actions/workflow-default-action
       
       - name: Debug Output
         run: |
