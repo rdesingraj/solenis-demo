@@ -30,7 +30,7 @@ jobs:
       - name: Debug Output
         run: |
           echo "Output from check_conditions_action: ${{ needs.check_conditions.outputs.workflow }}"
-          echo "Output from check_conditions_action: ${{ env.workflow }}"
+          echo "Output from check_conditions_action: ${{ env.rules_matched }}"
 
       - name: Use the result
         run: | 
