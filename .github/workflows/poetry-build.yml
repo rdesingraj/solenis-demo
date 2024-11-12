@@ -1,9 +1,6 @@
 name: Poetry Build
 
 on: [workflow_call]
-env:
-  workflow: false
-  semver: false
 jobs:
     
   check_conditions:
@@ -14,18 +11,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       
-      - name: Check if File Exists
+      - name: Check Rule - Workflow
         id: check_conditions_action
         uses: ./.github/actions/workflow-default-action
-
-      - name: Update Rule
-        run: |
-          echo "workflow=true" >> $GITHUB_ENV
   
   docs:
     needs: check_conditions
     if: ${{ needs.check_conditions.outputs.workflow != 'true' }}
-    # if: ${{ env.workflow == 'true' }}
     runs-on: ubuntu-latest 
     steps:
       - name: Checkout code
