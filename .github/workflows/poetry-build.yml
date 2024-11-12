@@ -18,16 +18,14 @@ jobs:
   
   docs:
     needs: check_conditions
-    if: ${{ needs.check_conditions.outputs.rules_matched == 'false' }}
+    if: ${{ needs.check_conditions.outputs.rules_matched == 'true' }}
     runs-on: ubuntu-latest 
-    # if: ${{ needs.check_conditions.outputs.rules_matched != 'true' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2      
       - name: Checkout code
         run: |
             echo "Data   ${{ needs.check_conditions.outputs.rules_matched }} - valid"
-            echo "Data   ${{ needs.check_conditions.outputs }} - valid"
 
   # does:
   #   # runs-on: ubuntu-latest
