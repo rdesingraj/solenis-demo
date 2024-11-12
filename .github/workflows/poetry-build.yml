@@ -24,7 +24,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2      
       - name: Checkout code
-        run: echo "Data   ${{ needs.check_conditions.outputs.rules_matched }} - valid"
+        run: |
+            echo "Data   ${{ needs.check_conditions.outputs.rules_matched }} - valid"
+            echo "Data   ${{ needs.check_conditions.outputs }} - valid"
 
   # does:
   #   # runs-on: ubuntu-latest
