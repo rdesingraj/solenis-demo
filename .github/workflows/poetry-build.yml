@@ -17,9 +17,9 @@ jobs:
   
   docs:
     needs: check_conditions
-    # if: ${{ needs.check_conditions.outputs.rules_matched != 'true' }}
-    runs-on: ubuntu-latest 
     if: ${{ needs.check_conditions.outputs.rules_matched != 'true' }}
+    runs-on: ubuntu-latest 
+    # if: ${{ needs.check_conditions.outputs.rules_matched != 'true' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2      
