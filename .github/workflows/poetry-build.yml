@@ -13,8 +13,8 @@ jobs:
         id: check_conditions_action
         uses: ./.github/actions/workflow-default-action
     outputs:
-      rules_matched: ${{ steps.check_conditions_action.outputs.rules_matched }}
-      # rules_matched: ${{ env.rules_matched }}
+      # rules_matched: ${{ steps.check_conditions_action.outputs.rules_matched }}
+      rules_matched: ${{ env.rules_matched }}
   
   docs:
     needs: check_conditions
