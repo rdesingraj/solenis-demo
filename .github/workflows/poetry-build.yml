@@ -5,8 +5,6 @@ jobs:
     
   check_conditions:
     runs-on: ubuntu-latest
-    outputs:
-      rules_matched: ${{ steps.check_conditions_action.outputs.rules_matched }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -14,6 +12,9 @@ jobs:
       - name: Check Rule - Workflow
         id: check_conditions_action
         uses: ./.github/actions/workflow-default-action
+    outputs:
+      # rules_matched: ${{ steps.check_conditions_action.outputs.rules_matched }}
+      rules_matched: ${{ env.rules_matched }}
   
   docs:
     needs: check_conditions
