@@ -17,25 +17,12 @@ jobs:
   
   docs:
     needs: check_conditions
-    if: ${{ needs.check_conditions.outputs.workflow != 'true' }}
+    # if: ${{ needs.check_conditions.outputs.workflow != 'true' }}
     runs-on: ubuntu-latest 
+    if: ${{ needs.check_conditions.outputs.workflow != 'true' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      
-      # - name: Check Rule - Workflow
-      #   id: check_conditions_action
-      #   uses: ./.github/actions/workflow-default-action
-      
-      - name: Debug Output
-        run: |
-          echo "Output from check_conditions_action: ${{ needs.check_conditions.outputs.workflow }}"
-          echo "Output from check_conditions_action: ${{ env.rules_matched }}"
-
-      - name: Use the result
-        run: | 
-          echo "The version is ${{ needs.check_conditions.outputs.workflow }}"
-          echo "The version is ${{ env.workflow }}"
+        uses: actions/checkout@v2      
 
   # does:
   #   # runs-on: ubuntu-latest
