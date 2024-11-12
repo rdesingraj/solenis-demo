@@ -16,7 +16,7 @@ jobs:
       
       - name: Check if File Exists
         id: check_conditions_action
-        uses: ./.github/actions/check-conditions-action
+        uses: ./.github/actions/workflow-default-action
 
       - name: Update Rule
         run: |
