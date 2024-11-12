@@ -18,7 +18,7 @@ jobs:
   
   docs:
     needs: check_conditions
-    if: ${{ needs.check_conditions.outputs.rules_matched == 'true' }}
+    if: ${{ needs.check_conditions.outputs.rules_matched == 'false' }}
     runs-on: ubuntu-latest 
     # if: ${{ needs.check_conditions.outputs.rules_matched != 'true' }}
     steps:
