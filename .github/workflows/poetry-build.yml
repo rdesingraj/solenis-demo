@@ -5,32 +5,6 @@ env:
   workflow: false
   semver: false
 jobs:
-  # check_conditions:
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     rules_matched: ${{ steps.check.outputs.result }}
-  #   steps:
-  #     - id: check
-  #       run: |
-  #         if [[ "${{ github.event_name }}" == 'push' && -n "${{ github.event.pull_request }}" ]]; then
-  #           echo "result=true" >> $GITHUB_OUTPUT
-  #         else
-  #           echo "result=false" >> $GITHUB_OUTPUT
-  #         fi
-  #     - run: echo "Result in check_conditions is ${{ steps.check.outputs.result }}"
-  # check_conditions:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #     - name: Run Check Conditions Action
-  #       id: check_conditions
-  #       uses: ./.github/actions/check-conditions-action
-        
-  # semver_tag:
-  #   uses: ./.github/workflows/common-parts.yml
-    # outputs:
-    #   semver_tag_matched: ${{ jobs.semver_tag.outputs.semver_tag_matched }}
     
   check_conditions:
     runs-on: ubuntu-latest
