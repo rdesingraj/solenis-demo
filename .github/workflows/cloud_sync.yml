@@ -14,10 +14,20 @@ env:
   PYTHON_VERSION: 3.10
       
 jobs:
+  env:
+    INCLUDE_PLATFORMS: 'linux'
+    PACKAGE_NAME: 'cloud-sync'
+    VDOCS_BUILD_COMMAND: task docs
+    VDOCS_DOCS_ORIGIN_PATH: ./docs
+    VDOCS_PROJECT_LANGUAGE: python
+    VDOCS_PROJECT_DESCRIPTION: "ABM Cloud Sync"
+    PYTHON_VERSION: 3.10
+  
   use_poetry_build:
     uses: ./.github/workflows/poetry-build.yml    
     with:
-      PYTHON_VERSION: '3.10'
+      # PYTHON_VERSION: '3.10'
+      PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
       
   # use_Versioned_docs:
   #   uses: ./.github/workflows/versioned-docs.yml
