@@ -11,7 +11,7 @@ env:
   VDOCS_DOCS_ORIGIN_PATH: ./docs
   VDOCS_PROJECT_LANGUAGE: python
   VDOCS_PROJECT_DESCRIPTION: "ABM Cloud Sync"
-  PYTHON_VERSION: '3.10'
+  PYTHON_VERSION: 3.10
       
 jobs:
   use_poetry_build:
