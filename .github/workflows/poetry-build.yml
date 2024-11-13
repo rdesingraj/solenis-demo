@@ -32,6 +32,7 @@ jobs:
       - name: Checkout code
         run: |
             echo "${{ inputs.PYTHON_VERSION }}"
+            echo ${{ inputs.PYTHON_VERSION }}
             echo "Data   ${{ needs.check_conditions.outputs.rules_matched }} - valid"
 
   # does:
