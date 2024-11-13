@@ -17,7 +17,7 @@ jobs:
   use_poetry_build:
     uses: ./.github/workflows/poetry-build.yml    
     with:
-      PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
+      PYTHON_VERSION: "${{ env.PYTHON_VERSION }}"
       
   # use_Versioned_docs:
   #   uses: ./.github/workflows/versioned-docs.yml
