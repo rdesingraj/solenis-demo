@@ -18,8 +18,8 @@ jobs:
     uses: ./.github/workflows/poetry-build.yml
     with:
       PYTHON_VERSION: '3.10'
-      ARTIFACTORY_API_USER: ${{secrets.ARTIFACTORY_API_USER}}
-      ARTIFACTORY_API_TOKEN: ${{secrets.ARTIFACTORY_API_TOKEN}}
+      # ARTIFACTORY_API_USER: ${{secrets.ARTIFACTORY_API_USER}}
+      # ARTIFACTORY_API_TOKEN: ${{secrets.ARTIFACTORY_API_TOKEN}}
       
   # use_Versioned_docs:
   #   uses: ./.github/workflows/versioned-docs.yml
