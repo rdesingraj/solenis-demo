@@ -14,10 +14,25 @@ env:
   PYTHON_VERSION: 3.10
       
 jobs:  
-  use_poetry_build:
-    uses: ./.github/workflows/poetry-build.yml
-    with:
-      PYTHON_VERSION: '3.10'
+
+  build:
+    # Use the latest Ubuntu environment
+    runs-on: ubuntu-latest
+
+    # Steps for the job
+    steps:
+      # Checkout the code
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      # Build the Docker image
+      - name: Build Docker image
+        run: docker build -t my-app:latest .
+        
+  # use_poetry_build:
+  #   uses: ./.github/workflows/poetry-build.yml
+  #   with:
+      # PYTHON_VERSION: '3.10'
       # ARTIFACTORY_API_USER: ${{secrets.ARTIFACTORY_API_USER}}
       # ARTIFACTORY_API_TOKEN: ${{secrets.ARTIFACTORY_API_TOKEN}}
       
